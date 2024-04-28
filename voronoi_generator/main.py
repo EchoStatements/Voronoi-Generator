@@ -106,8 +106,10 @@ def get_adjacency_matrix(partitions):
     return adjacency_matrix
 
 
-def create_image_array(partitions, graph_colouring, colour_list, outlines=None, mask=None):
+def create_image_array(partitions, graph_colouring, colour_list, outlines=None):
     """Creates a numpy array with RGB direction which can be converted into an image.
+
+    Note that this involves transposing the x and y axes as a final step.
 
     Args:
         partitions (np.array): 2d array saying which partition each pixel belongs to.
@@ -117,7 +119,7 @@ def create_image_array(partitions, graph_colouring, colour_list, outlines=None, 
         mask (np.array): A mask for regions where the second palette in colour_lists should be used
 
     Returns:
-        np.array:
+        np.array: an array of size (y_size, x_size, 3), containing the RGB data for the image.
     """
     x_size = partitions.shape[0]
     y_size = partitions.shape[1]
