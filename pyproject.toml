@@ -1,0 +1,120 @@
+[tool.poetry]
+name = "voronoi_generator"
+version = "0.1.0"
+description = "A tool for generating Voronoi diagrams package."
+authors = ["Danny Wood <danny@fuzzylabs.ai>"]
+license = "MIT license"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.26.4"
+scipy = "^1.13.0"
+matplotlib = "^3.8.4"
+pillow = "^10.3.0"
+scikit-learn = "^1.4.2"
+pulp = "^2.8.0"
+pydantic = "^2.7.1"
+pyyaml = "^6.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+licensecheck = "^2024.1.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "--cov=voronoi_generator --cov-report term-missing"
+testpaths = [
+    "tests"
+]
+
+# mypy configuration
+[tool.mypy]
+show_error_codes = true
+exclude = ["docs", "tests", "LICENSE"]
+strict = true
+namespace_packages = true
+
+# black configuration
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+exclude = '''
+/(
+	\.git
+| \.hg
+| \.mypy_cache
+| \.tox
+| \.venv
+| _build
+| buck-out
+| build
+)/
+'''
+
+[tool.ruff]
+target-version = "py310"
+
+# Match black. Note that this also checks comment line length, but black does not format comments.
+line-length = 120
+
+show-fixes = true
+
+[tool.ruff.lint]
+ignore-init-module-imports = true
+select = [
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+    "Q",    # flake8-quotes
+    "ISC",  # flake8-implicit-str-concat
+    "F",    # pyflakes
+    "D",    # pydocstyle
+    "E",    # pycodestyle error
+    "W",    # pycodestyle warning
+    "N",    # pep8-naming
+    "I",    # isort
+    "PL",   # pylint rules from categories "Convention", "Error", and "Warning"
+    "PLE",  # ruff currently implements only a subset of pylint's rules
+    "PLW",  # pylint warning
+    "PLR",  # pylint refactor
+    "UP",   # pyupgrade
+    "C",    # Complexity (mccabe+) & comprehensions
+]
+ignore = [
+    "UP006", # See https://github.com/bokeh/bokeh/issues/13143
+    "UP007", # See https://github.com/bokeh/bokeh/pull/13144
+]
+
+[tool.ruff.lint.pydocstyle]
+# Use Google-style docstrings.
+convention = "google"
+
+[tool.ruff.lint.mccabe]
+# Flag errors (`C901`) whenever the complexity level exceeds 10.
+max-complexity = 10
+
+
+# typos configuration
+[tool.typos.files]
+extend-exclude=[".gitignore", "LICENSE", ".*",]
+
+[tool.typos.default.extend-words]
+center = "center"
+minimize="minimize"
+seed="seed"
+
+[tool.typos.default]
+locale="en-gb"
+
+
+# Bandit configuration
+[tool.bandit]
+exclude_dirs = []
+
+[tool.bandit.assert_used]
+skips = ['*test.py', '*/test_*.py']
