@@ -9,7 +9,7 @@ A tool for generating Voronoi diagrams.
 Voronoi diagrams can be created from yaml config files by passing the config file as an argument to `main.py` in the `voronoi_generator` directory, for instance
 
 ```bash
-python example_configs/demo_1.yaml
+python main.py example_configs/demo_1.yaml
 ```
 
 This generates a Voronoi diagram from the following config.
