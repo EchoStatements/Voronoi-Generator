@@ -1,0 +1,12 @@
+
+x_size: 500
+y_size: 500
+n_centroids: 20
+distance_function: "cityblock"
+colour_list: [[113, 215, 196], [51, 20, 126], [255, 255, 255], [55, 66, 73]]
+wrap_x: true
+border_thickness: 4
+file_path: "images/example_image.png"
+
+numpy_seed: 1
+python_seed: 1
