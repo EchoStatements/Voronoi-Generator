@@ -7,7 +7,9 @@ import yaml
 from colouring_solver import colour_graph
 from PIL import Image
 from scipy.signal import convolve2d
+from scipy.stats.qmc import PoissonDisk
 from settings import NamedColours, VoronoiDiagramSettings
+from skimage.draw import disk
 from sklearn.metrics import pairwise_distances
 
 
@@ -56,9 +58,15 @@ def generate_outlines(partitions, border_thickness):
     outlines_2 = np.abs(partitions - y_offset)
     outlines = ((outlines_1 + outlines_2) > 0) * 1
 
-    # We thicken the outline by convolving with a matrix of ones whose size is determined by
+    # We thicken the outline by convolving with a matrix containing a circle of ones whose size is determined by
     # the border thickness parameter.
     thickener = np.ones((border_thickness, border_thickness))
+    mask = np.zeros((3 * border_thickness, 3 * border_thickness), dtype=np.uint8)
+
+    grid_centre = mask.shape[0] // 2
+
+    rr, cc = disk((grid_centre, grid_centre), border_thickness)
+    mask[rr, cc] = 1
     outlines = (convolve2d(outlines, thickener, mode="same", boundary="wrap")) > 0
     return outlines
 
@@ -142,7 +150,41 @@ def create_image_array(partitions, graph_colouring, colour_list, outlines=None):
     return np.swapaxes(rgb_array, 0, 1)
 
 
-def create_image(settings: VoronoiDiagramSettings):
+def generate_points(settings, x_y_ratio, method="uniform", placed_points=[[0.25, 0.35], [0.75, 0.35]], radius=0.22):
+    """Generate points for Voronoi diagram.
+
+    Args:
+        settings: The settings to be used to generate points
+        x_y_ratio: The ratio between x axis scale and y axis scale
+        method: The method used to generate the points
+        placed_points: The points to be placed explicitly
+        radius: How far generated points must be at a minimum from the placed points
+
+    """
+    if method == "uniform":
+        centroids = np.zeros((settings.n_centroids, 2))
+        centroids[:, 0] = np.random.uniform(0, 1, size=settings.n_centroids)
+        centroids[:, 1] = np.random.uniform(0, x_y_ratio, size=settings.n_centroids)
+    elif method == "poisson":
+        poisson_seed = np.random.choice(100000)
+        engine = PoissonDisk(d=2, radius=0.11, seed=poisson_seed)
+        centroids = engine.random(settings.n_centroids * 10)
+        centroids[:, 1] = centroids[:, 1] * x_y_ratio
+    else:
+        raise ValueError
+
+    if placed_points is not None:
+        dist_from_centroid = pairwise_distances(centroids, placed_points)
+        min_dist_from_points = np.min(dist_from_centroid, axis=1)
+        allowed_point_indices = np.argwhere(min_dist_from_points > radius)
+        allowed_points = [centroids[idx, :].flatten() for idx in allowed_point_indices]
+        allowed_points = allowed_points + placed_points
+        centroids = np.array(allowed_points)
+
+    return centroids
+
+
+def create_voronoi_diagram(settings: VoronoiDiagramSettings):
     """Creates and saves Voronoi diagram image.
 
     Args:
@@ -151,18 +193,20 @@ def create_image(settings: VoronoiDiagramSettings):
     """
     x_size = settings.x_size
     y_size = settings.y_size
+    x_y_ratio = settings.y_size / settings.x_size
 
-    np.random.seed(settings.numpy_seed)
     random.seed(settings.python_seed)
+    np.random.seed(settings.numpy_seed)
 
     x_coords = np.linspace(0, 1, x_size)
-    y_coords = np.linspace(0, 1, y_size)
+    y_coords = np.linspace(0, x_y_ratio, y_size)
     grid = np.array(np.meshgrid(x_coords, y_coords))
     grid = grid.reshape(2, -1).T
 
-    centroids = np.random.uniform(0, 1, size=(settings.n_centroids, 2))
+    centroids = generate_points(settings, x_y_ratio, method=settings.sampling_method)
 
     partitions = generate_partitions(grid, centroids, wrap_x=True, metric=settings.distance_function)
+
     partitions = partitions.reshape(y_size, x_size).T
 
     outlines = generate_outlines(partitions, settings.border_thickness) if settings.border_thickness > 0 else None
@@ -171,10 +215,13 @@ def create_image(settings: VoronoiDiagramSettings):
 
     graph_colouring = colour_graph(adj_matrix)
 
-    rgb_array = create_image_array(partitions, graph_colouring, settings.colour_list, outlines, mask=None)
+    rgb_array = create_image_array(partitions, graph_colouring, settings.colour_list, outlines)
 
-    image = Image.fromarray(rgb_array)
-    image.save(settings.file_path, resolution=300)
+    if settings.file_path is not None:
+        image = Image.fromarray(rgb_array)
+        image.save(settings.file_path, resolution=300)
+
+    return rgb_array
 
 
 def main():
@@ -188,7 +235,16 @@ def main():
     for idx in range(len(settings.colour_list)):
         if isinstance(settings.colour_list[idx], str):
             settings.colour_list[idx] = named_colours.named_colours[settings.colour_list[idx]]
-    create_image(settings)
+    for s_idx in range(200):
+        seed = np.random.choice(1000000)
+
+        print(s_idx)
+        print(seed)
+
+        settings.numpy_seed = seed
+        settings.python_seed = seed
+        settings.file_path = f"images/bulk/test_{seed}.png"
+        create_voronoi_diagram(settings)
 
 
 if __name__ == "__main__":

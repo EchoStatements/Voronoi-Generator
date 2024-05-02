@@ -1,7 +1,9 @@
 """Schema for config files."""
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 
 from pydantic import BaseModel, Field
+
+SamplingMethod = Literal["uniform", "poisson"]
 
 
 class VoronoiDiagramSettings(BaseModel):
@@ -20,10 +22,12 @@ class VoronoiDiagramSettings(BaseModel):
 
     border_thickness: int = Field(default=2)
 
-    file_path: str = Field("images/example.png")
+    file_path: Optional[str] = Field(default=None)
 
     numpy_seed: int = Field(default=0)
     python_seed: int = Field(default=0)
+
+    sampling_method: SamplingMethod = Field(default="uniform")
 
 
 class NamedColours(BaseModel):
