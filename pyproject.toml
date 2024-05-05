@@ -64,6 +64,7 @@ target-version = "py310"
 # Match black. Note that this also checks comment line length, but black does not format comments.
 line-length = 120
 
+
 show-fixes = true
 
 [tool.ruff.lint]
@@ -94,6 +95,9 @@ ignore = [
 [tool.ruff.lint.pydocstyle]
 # Use Google-style docstrings.
 convention = "google"
+
+[tool.ruff.lint.pylint]
+max-args = 7
 
 [tool.ruff.lint.mccabe]
 # Flag errors (`C901`) whenever the complexity level exceeds 10.

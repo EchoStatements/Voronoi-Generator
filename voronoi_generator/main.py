@@ -157,35 +157,40 @@ def create_image_array(partitions, graph_colouring, colour_list, outlines=None):
     return np.swapaxes(rgb_array, 0, 1)
 
 
-def generate_points(settings, x_y_ratio, method="uniform"):
+def generate_points(
+    n_centroids, x_y_ratio, method="uniform", placed_points=None, point_radius=None, poisson_radius=None
+):
     """Generate points for Voronoi diagram.
 
     Args:
-        settings: The settings to be used to generate points
+        n_centroids (int): Number of points to be generated
         x_y_ratio: The ratio between x axis scale and y axis scale
         method: The method used to generate the points
+        placed_points: A list of the centroids to be explicitly placed
+        point_radius: The minimum distance of random points from placed points
+        poisson_radius: The minimum distance for Poisson disk sampling
 
     """
     logger.info("Generating points")
     if method == "uniform":
-        centroids = np.zeros((settings.n_centroids, 2))
-        centroids[:, 0] = np.random.uniform(0, 1, size=settings.n_centroids)
-        centroids[:, 1] = np.random.uniform(0, x_y_ratio, size=settings.n_centroids)
+        centroids = np.zeros((n_centroids, 2))
+        centroids[:, 0] = np.random.uniform(0, 1, size=n_centroids)
+        centroids[:, 1] = np.random.uniform(0, x_y_ratio, size=n_centroids)
     elif method == "poisson":
         logger.info("Poisson sampling does not respect `n_centroids` value")
         poisson_seed = np.random.choice(100000)
-        engine = PoissonDisk(d=2, radius=settings.poisson_radius, seed=poisson_seed)
-        centroids = engine.random(settings.n_centroids * 10)
+        engine = PoissonDisk(d=2, radius=poisson_radius, seed=poisson_seed)
+        centroids = engine.random(n_centroids * 10)
         centroids[:, 1] = centroids[:, 1] * x_y_ratio
     else:
         raise ValueError
 
-    if settings.placed_points is not None:
-        dist_from_centroid = pairwise_distances(centroids, settings.placed_points)
+    if placed_points is not None:
+        dist_from_centroid = pairwise_distances(centroids, placed_points)
         min_dist_from_points = np.min(dist_from_centroid, axis=1)
-        allowed_point_indices = np.argwhere(min_dist_from_points > settings.point_radius)
+        allowed_point_indices = np.argwhere(min_dist_from_points > point_radius)
         allowed_points = [centroids[idx, :].flatten() for idx in allowed_point_indices]
-        allowed_points = allowed_points + settings.placed_points
+        allowed_points = allowed_points + placed_points
         centroids = np.array(allowed_points)
 
     return centroids
@@ -210,7 +215,14 @@ def create_voronoi_diagram(settings: VoronoiDiagramSettings):
     grid = np.array(np.meshgrid(x_coords, y_coords))
     grid = grid.reshape(2, -1).T
 
-    centroids = generate_points(settings, x_y_ratio, method=settings.sampling_method)
+    centroids = generate_points(
+        settings.n_centroids,
+        x_y_ratio,
+        method=settings.sampling_method,
+        placed_points=settings.placed_points,
+        point_radius=settings.point_radius,
+        poisson_radius=settings.poisson_radius,
+    )
 
     partitions = generate_partitions(grid, centroids, wrap_x=True, metric=settings.distance_function)
 
