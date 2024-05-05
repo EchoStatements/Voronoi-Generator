@@ -1,10 +1,12 @@
 [tool.poetry]
 name = "voronoi_generator"
 version = "0.1.0"
-description = "A tool for generating Voronoi diagrams package."
+description = "A tool for generating Voronoi diagrams."
 authors = ["Danny Wood <danny@fuzzylabs.ai>"]
 license = "MIT license"
 readme = "README.md"
+
+packages = [{include = "voronoi", from = "voronoi_generator"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
