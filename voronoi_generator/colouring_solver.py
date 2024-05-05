@@ -1,6 +1,10 @@
 """Graph colouring solver."""
+import logging
+
 import numpy as np
 import pulp
+
+logger = logging.getLogger(__name__)
 
 
 def colour_graph(adjacency_matrix):
@@ -13,6 +17,7 @@ def colour_graph(adjacency_matrix):
         list[int]: The colouring of the graph given as a list of integers of size (n_vertices). All vertices
                    with the same integer may be coloured the same without having two adjacent vertices share a colour.
     """
+    logger.info("Computing graph colouring")
     n_vertices = adjacency_matrix.shape[0]
     edges = np.argwhere(adjacency_matrix == 1)
 

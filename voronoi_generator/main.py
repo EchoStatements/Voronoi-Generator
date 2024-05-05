@@ -1,4 +1,5 @@
 """Creates Voronoi Diagrams."""
+import logging
 import random
 import sys
 
@@ -12,6 +13,8 @@ from settings import NamedColours, VoronoiDiagramSettings
 from skimage.draw import disk
 from sklearn.metrics import pairwise_distances
 
+logger = logging.getLogger(__name__)
+
 
 def generate_partitions(grid, centroids, wrap_x=False, metric="euclidean"):
     """Generates partitions/tilings in Voronoi diagram.
@@ -23,6 +26,7 @@ def generate_partitions(grid, centroids, wrap_x=False, metric="euclidean"):
         metric (str): Which metric to use when computing distances
 
     """
+    logger.info("Generating partitions")
     n_centroids = centroids.shape[0]
 
     if wrap_x:
@@ -49,6 +53,7 @@ def generate_outlines(partitions, border_thickness):
         border_thickness (int): How thick the generated outlines should be.
 
     """
+    logger.info("Generating outlines")
     x_offset = np.concatenate((partitions[1:, :], partitions[0:1, :]), axis=0)
     y_offset = np.concatenate((partitions[:, 1:], partitions[:, 0:1]), axis=1)
 
@@ -81,6 +86,7 @@ def get_adjacency_matrix(partitions):
         np.array: A 2d array of size (n_partitions, n_partitions) representing the adjacency matrix.
 
     """
+    logger.info("Generating adjacency matrix")
     n_partitions = np.max(partitions).astype(int) + 1
     rolled_grids = []
     adjacency_matrix = np.zeros((n_partitions, n_partitions))
@@ -129,6 +135,7 @@ def create_image_array(partitions, graph_colouring, colour_list, outlines=None):
     Returns:
         np.array: an array of size (y_size, x_size, 3), containing the RGB data for the image.
     """
+    logger.info("Generating image array")
     x_size = partitions.shape[0]
     y_size = partitions.shape[1]
 
@@ -161,11 +168,13 @@ def generate_points(settings, x_y_ratio, method="uniform", placed_points=[[0.25,
         radius: How far generated points must be at a minimum from the placed points
 
     """
+    logger.info("Generating points")
     if method == "uniform":
         centroids = np.zeros((settings.n_centroids, 2))
         centroids[:, 0] = np.random.uniform(0, 1, size=settings.n_centroids)
         centroids[:, 1] = np.random.uniform(0, x_y_ratio, size=settings.n_centroids)
     elif method == "poisson":
+        logger.info("Poisson sampling does not respect `n_centroids` value")
         poisson_seed = np.random.choice(100000)
         engine = PoissonDisk(d=2, radius=0.11, seed=poisson_seed)
         centroids = engine.random(settings.n_centroids * 10)
@@ -218,6 +227,7 @@ def create_voronoi_diagram(settings: VoronoiDiagramSettings):
     rgb_array = create_image_array(partitions, graph_colouring, settings.colour_list, outlines)
 
     if settings.file_path is not None:
+        logger.info(f"Saving image as {settings.file_path}")
         image = Image.fromarray(rgb_array)
         image.save(settings.file_path, resolution=300)
 
@@ -226,6 +236,7 @@ def create_voronoi_diagram(settings: VoronoiDiagramSettings):
 
 def main():
     """Main function."""
+    logging.basicConfig(level=logging.INFO)
     file_path = sys.argv[1]
     with open(file_path) as file_:
         settings = VoronoiDiagramSettings(**yaml.safe_load(file_))
@@ -235,16 +246,8 @@ def main():
     for idx in range(len(settings.colour_list)):
         if isinstance(settings.colour_list[idx], str):
             settings.colour_list[idx] = named_colours.named_colours[settings.colour_list[idx]]
-    for s_idx in range(200):
-        seed = np.random.choice(1000000)
 
-        print(s_idx)
-        print(seed)
-
-        settings.numpy_seed = seed
-        settings.python_seed = seed
-        settings.file_path = f"images/bulk/test_{seed}.png"
-        create_voronoi_diagram(settings)
+    create_voronoi_diagram(settings)
 
 
 if __name__ == "__main__":
