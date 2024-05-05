@@ -157,15 +157,13 @@ def create_image_array(partitions, graph_colouring, colour_list, outlines=None):
     return np.swapaxes(rgb_array, 0, 1)
 
 
-def generate_points(settings, x_y_ratio, method="uniform", placed_points=[[0.25, 0.35], [0.75, 0.35]], radius=0.22):
+def generate_points(settings, x_y_ratio, method="uniform"):
     """Generate points for Voronoi diagram.
 
     Args:
         settings: The settings to be used to generate points
         x_y_ratio: The ratio between x axis scale and y axis scale
         method: The method used to generate the points
-        placed_points: The points to be placed explicitly
-        radius: How far generated points must be at a minimum from the placed points
 
     """
     logger.info("Generating points")
@@ -176,18 +174,18 @@ def generate_points(settings, x_y_ratio, method="uniform", placed_points=[[0.25,
     elif method == "poisson":
         logger.info("Poisson sampling does not respect `n_centroids` value")
         poisson_seed = np.random.choice(100000)
-        engine = PoissonDisk(d=2, radius=0.11, seed=poisson_seed)
+        engine = PoissonDisk(d=2, radius=settings.poisson_radius, seed=poisson_seed)
         centroids = engine.random(settings.n_centroids * 10)
         centroids[:, 1] = centroids[:, 1] * x_y_ratio
     else:
         raise ValueError
 
-    if placed_points is not None:
-        dist_from_centroid = pairwise_distances(centroids, placed_points)
+    if settings.placed_points is not None:
+        dist_from_centroid = pairwise_distances(centroids, settings.placed_points)
         min_dist_from_points = np.min(dist_from_centroid, axis=1)
-        allowed_point_indices = np.argwhere(min_dist_from_points > radius)
+        allowed_point_indices = np.argwhere(min_dist_from_points > settings.point_radius)
         allowed_points = [centroids[idx, :].flatten() for idx in allowed_point_indices]
-        allowed_points = allowed_points + placed_points
+        allowed_points = allowed_points + settings.placed_points
         centroids = np.array(allowed_points)
 
     return centroids

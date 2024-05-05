@@ -29,6 +29,12 @@ class VoronoiDiagramSettings(BaseModel):
 
     sampling_method: SamplingMethod = Field(default="uniform")
 
+    # Radius to use in Poisson sampling
+    poisson_radius: Optional[float] = Field(default=0.1)
+
+    placed_points: Optional[list[list[float]]] = Field(default=None)
+    point_radius: Optional[float] = Field(default=None)
+
 
 class NamedColours(BaseModel):
     """Schema for colour list."""
