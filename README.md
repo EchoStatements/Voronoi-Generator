@@ -6,11 +6,11 @@ A tool for generating Voronoi diagrams.
 
 ## Features
 
-* Vertically/horizontal tiling
-* Choice of distance functions
+* Vertical/horizontal tiling of plane
+* Choice of distance functions (from scikit-learn's pairwise distances)
 * Four-colouring
-* Tile Borders
-* Random point placement
+* Optional region borders
+* Random point placement (uniform or Poisson disk sampling)
 * Manual point placement
 
 
