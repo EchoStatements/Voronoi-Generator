@@ -2,8 +2,6 @@
     Voronoi Generator: A tool for creating Voronoi Diagrams
 </h1>
 
-A tool for generating Voronoi diagrams.
-
 This library allows for config-driven creation of Voronoi diagrams, implemented in fully-vectorised numpy.
 
 **Features include**:
