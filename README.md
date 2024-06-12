@@ -4,15 +4,19 @@
 
 A tool for generating Voronoi diagrams.
 
-## Features
+This library allows for config-driven creation of Voronoi diagrams, implemented in fully-vectorised numpy.
 
-* Vertical/horizontal tiling of plane
+**Features include**:
+
 * Choice of distance functions (from scikit-learn's pairwise distances)
-* Four-colouring
+* Vertical/horizontal tiling of plane
+* Fully customisable colour palette, using a four-colour solver to prevent adjacent regions from sharing a colour
 * Optional region borders
-* Random point placement (uniform or Poisson disk sampling)
-* Manual point placement
+* Manual centroid placement
+* centroid placement using uniform random placement, or poisson disk sampling with adjustable disk size
 
+
+Thanks to [Fuzzy Labs](https://fuzzylabs.ai) for their support in the  making of this library.
 
 ## Creating diagram from a config file
 
@@ -67,3 +71,6 @@ python_seed: 1
 This produces the following image:
 
 <img src="images/example_image_2.png" width="500">
+
+
+#
