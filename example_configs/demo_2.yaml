@@ -1,6 +1,6 @@
 
-x_size: 500
-y_size: 500
+x_size: 1000
+y_size: 1000
 n_centroids: 20
 distance_function: "euclidean"
 colour_list: ["dodgerblue", "indianred", "paleturquoise", "lightcoral"]

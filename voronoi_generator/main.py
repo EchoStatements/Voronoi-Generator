@@ -16,13 +16,14 @@ from sklearn.metrics import pairwise_distances
 logger = logging.getLogger(__name__)
 
 
-def generate_partitions(grid, centroids, wrap_x=False, metric="euclidean"):
+def generate_partitions(grid, centroids, wrap_x=False, wrap_y=False, metric="euclidean"):
     """Generates partitions/tilings in Voronoi diagram.
 
     Args:
         grid (np.array): Array of size (n_points, 2) giving coordinates of all points on the grid
         centroids (np.array): Array of size (n_centroids, 2) giving coordinates of all centroids
         wrap_x (bool): Whether to wrap the partitions on the x-axis
+        wrap_y (bool): Whether to wrap the partitions on the x-axis
         metric (str): Which metric to use when computing distances
 
     """
@@ -37,6 +38,16 @@ def generate_partitions(grid, centroids, wrap_x=False, metric="euclidean"):
             (centroids, centroids - grid_width_adjust, centroids + grid_width_adjust),
             axis=0,
         )
+    if wrap_y:
+        grid_height = np.max(grid[:, 1]) - np.min(grid[:, 1])
+        grid_height_adjust = np.zeros_like(centroids)
+        grid_height_adjust[:, 1] = grid_height
+        centroids = np.concatenate(
+            (centroids, centroids - grid_height_adjust, centroids + grid_height_adjust),
+            axis=0,
+        )
+    if wrap_x and wrap_y:
+        raise NotImplementedError
 
     distances = pairwise_distances(grid, centroids, metric=metric)
     partitions = np.argmin(distances, axis=1)
@@ -224,7 +235,9 @@ def create_voronoi_diagram(settings: VoronoiDiagramSettings):
         poisson_radius=settings.poisson_radius,
     )
 
-    partitions = generate_partitions(grid, centroids, wrap_x=True, metric=settings.distance_function)
+    partitions = generate_partitions(
+        grid, centroids, wrap_x=settings.wrap_x, wrap_y=settings.wrap_y, metric=settings.distance_function
+    )
 
     partitions = partitions.reshape(y_size, x_size).T
 

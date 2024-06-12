@@ -19,6 +19,7 @@ class VoronoiDiagramSettings(BaseModel):
     named_colours_file: Optional[str] = Field(default=None)
 
     wrap_x: bool = Field(default=True)
+    wrap_y: bool = Field(default=False)
 
     border_thickness: int = Field(default=2)
 

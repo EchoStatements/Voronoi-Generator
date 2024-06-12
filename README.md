@@ -4,6 +4,16 @@
 
 A tool for generating Voronoi diagrams.
 
+## Features
+
+* Vertically/horizontal tiling
+* Choice of distance functions
+* Four-colouring
+* Tile Borders
+* Random point placement
+* Manual point placement
+
+
 ## Creating diagram from a config file
 
 Voronoi diagrams can be created from yaml config files by passing the config file as an argument to `main.py` in the `voronoi_generator` directory, for instance
@@ -15,22 +25,23 @@ python voronoi_generator/main.py example_configs/demo_1.yaml
 This generates a Voronoi diagram from the following config.
 
 ```yaml
-x_size: 500
-y_size: 500
-n_centroids: 20
+x_size: 2000
+y_size: 2000
+n_centroids: 40
 distance_function: "cityblock"
 colour_list: [[113, 215, 196], [51, 20, 126], [255, 255, 255], [55, 66, 73]]
 wrap_x: true
-border_thickness: 4
+border_thickness: 6
 file_path: "images/example_image.png"
 
-numpy_seed: 1
-python_seed: 1
+numpy_seed: 0
+python_seed: 0
+
 ```
 
 This produces the following diagram:
 
-![diagram 1](images/example_image.png "Example Image 1")
+<img src="images/example_image.png" width="500">
 
 ## Named Colours
 
@@ -55,4 +66,4 @@ python_seed: 1
 
 This produces the following image:
 
-![diagram 2](images/example_image_2.png "Example Image 2")
+<img src="images/example_image_2.png" width="500">
