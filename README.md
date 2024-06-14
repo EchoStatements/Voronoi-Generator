@@ -11,7 +11,7 @@ This library allows for config-driven creation of Voronoi diagrams, implemented 
 * Fully customisable colour palette, using a four-colour solver to prevent adjacent regions from sharing a colour
 * Optional region borders
 * Manual centroid placement
-* centroid placement using uniform random placement, or poisson disk sampling with adjustable disk size
+* Centroid placement using uniform random placement, or poisson disk sampling with adjustable disk size
 
 
 Thanks to [Fuzzy Labs](https://fuzzylabs.ai) for their support in the  making of this library.
