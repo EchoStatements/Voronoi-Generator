@@ -12,6 +12,7 @@ This library allows for config-driven creation of Voronoi diagrams, implemented 
 * Optional region borders
 * Manual centroid placement
 * Centroid placement using uniform random placement, or poisson disk sampling with adjustable disk size
+* Ability to draw centroids on image
 
 
 Thanks to [Fuzzy Labs](https://fuzzylabs.ai) for their support in the  making of this library.

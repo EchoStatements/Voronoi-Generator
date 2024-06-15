@@ -49,6 +49,16 @@ def generate_partitions(grid, centroids, wrap_x=False, wrap_y=False, metric="euc
     if wrap_x and wrap_y:
         raise NotImplementedError
 
+    # Numerical instability in Manhattan distance for floats means that we need
+    # to convert to int to avoid artefacts in the finished image
+    # Choosing grid.shape[0] as a scaling factor before conversion ensures
+    # no loss of resolution
+    if metric in ["cityblock", "manhattan"]:
+        grid = grid * grid.shape[0]
+        grid = grid.astype(int)
+        centroids = centroids * grid.shape[0]
+        centroids = centroids.astype(int)
+
     distances = pairwise_distances(grid, centroids, metric=metric)
     partitions = np.argmin(distances, axis=1)
     partitions = np.mod(partitions, n_centroids)
@@ -131,7 +141,7 @@ def get_adjacency_matrix(partitions):
     return adjacency_matrix
 
 
-def create_image_array(partitions, graph_colouring, colour_list, outlines=None):
+def create_image_array(partitions, graph_colouring, colour_list, outlines=None, centroid_mask=None):
     """Creates a numpy array with RGB direction which can be converted into an image.
 
     Note that this involves transposing the x and y axes as a final step.
@@ -142,6 +152,7 @@ def create_image_array(partitions, graph_colouring, colour_list, outlines=None):
         colour_list (list[int]): List of colours to be used in colouring the graph
         outlines (np.array): The outlines to be applied to the image
         mask (np.array): A mask for regions where the second palette in colour_lists should be used
+        centroid_mask: a 2d array showing where the centroids are
 
     Returns:
         np.array: an array of size (y_size, x_size, 3), containing the RGB data for the image.
@@ -164,6 +175,12 @@ def create_image_array(partitions, graph_colouring, colour_list, outlines=None):
     if outlines is not None:
         for idx in range(3):
             rgb_array[:, :, idx] = (outlines * 0) + np.logical_not(outlines.astype(bool)) * rgb_array[:, :, idx]
+
+    if centroid_mask is not None:
+        for idx in range(3):
+            rgb_array[:, :, idx] = (centroid_mask * 0) + np.logical_not(centroid_mask.astype(bool)) * rgb_array[
+                :, :, idx
+            ]
 
     return np.swapaxes(rgb_array, 0, 1)
 
@@ -197,14 +214,31 @@ def generate_points(
         raise ValueError
 
     if placed_points is not None:
-        dist_from_centroid = pairwise_distances(centroids, placed_points)
-        min_dist_from_points = np.min(dist_from_centroid, axis=1)
-        allowed_point_indices = np.argwhere(min_dist_from_points > point_radius)
-        allowed_points = [centroids[idx, :].flatten() for idx in allowed_point_indices]
-        allowed_points = allowed_points + placed_points
-        centroids = np.array(allowed_points)
+        if n_centroids == 0:
+            centroids = np.array(placed_points)
+        else:
+            dist_from_centroid = pairwise_distances(centroids, placed_points)
+            min_dist_from_points = np.min(dist_from_centroid, axis=1)
+            allowed_point_indices = np.argwhere(min_dist_from_points > point_radius)
+            allowed_points = [centroids[idx, :].flatten() for idx in allowed_point_indices]
+            allowed_points = allowed_points + placed_points
+            centroids = np.array(allowed_points)
 
     return centroids
+
+
+def generate_icons(centroids, grid, icon_thickness):
+    """Generate a mask for showing the centres of each partition.
+
+    Args:
+        centroids (np.ndarray): An array of coordinates of centroids
+        grid (np.ndarray): An array of coordinated for points in the grid
+        icon_thickness (int): How thick to make the icon for each partition centre
+    """
+    icon_thickness = (grid[1, 0] - grid[0, 0]) * icon_thickness
+    distances = pairwise_distances(grid, centroids)
+    centroid_mask = np.min(distances, axis=1) < icon_thickness
+    return centroid_mask
 
 
 def create_voronoi_diagram(settings: VoronoiDiagramSettings):
@@ -243,11 +277,17 @@ def create_voronoi_diagram(settings: VoronoiDiagramSettings):
 
     outlines = generate_outlines(partitions, settings.border_thickness) if settings.border_thickness > 0 else None
 
+    if settings.centroid_thickness > 0:
+        centroid_mask = generate_icons(centroids, grid, settings.centroid_thickness)
+        centroid_mask = centroid_mask.reshape(y_size, x_size).T
+    else:
+        centroid_mask = None
+
     adj_matrix = get_adjacency_matrix(partitions)
 
     graph_colouring = colour_graph(adj_matrix)
 
-    rgb_array = create_image_array(partitions, graph_colouring, settings.colour_list, outlines)
+    rgb_array = create_image_array(partitions, graph_colouring, settings.colour_list, outlines, centroid_mask)
 
     if settings.file_path is not None:
         logger.info(f"Saving image as {settings.file_path}")

@@ -22,6 +22,7 @@ class VoronoiDiagramSettings(BaseModel):
     wrap_y: bool = Field(default=False)
 
     border_thickness: int = Field(default=2)
+    centroid_thickness: int = Field(default=5)
 
     file_path: Optional[str] = Field(default=None)
 
