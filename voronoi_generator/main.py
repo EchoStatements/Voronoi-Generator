@@ -32,22 +32,29 @@ def generate_partitions(grid, centroids, wrap_x=False, wrap_y=False, metric="euc
 
     if wrap_x:
         grid_width = np.max(grid[:, 0]) - np.min(grid[:, 0])
-        grid_width_adjust = np.zeros_like(centroids)
-        grid_width_adjust[:, 0] = grid_width
+        grid_width_adjust = np.array([grid_width, 0]).reshape(1, 2)
         centroids = np.concatenate(
             (centroids, centroids - grid_width_adjust, centroids + grid_width_adjust),
             axis=0,
         )
     if wrap_y:
         grid_height = np.max(grid[:, 1]) - np.min(grid[:, 1])
-        grid_height_adjust = np.zeros_like(centroids)
-        grid_height_adjust[:, 1] = grid_height
+        grid_height_adjust = np.array([0, grid_height]).reshape(1, 2)
         centroids = np.concatenate(
             (centroids, centroids - grid_height_adjust, centroids + grid_height_adjust),
             axis=0,
         )
     if wrap_x and wrap_y:
-        raise NotImplementedError
+        centroids = np.concatenate(
+            (
+                centroids,
+                centroids - grid_height_adjust - grid_width_adjust,
+                centroids - grid_height_adjust + grid_width_adjust,
+                centroids + grid_height_adjust + grid_width_adjust,
+                centroids + grid_height_adjust - grid_width_adjust,
+            ),
+            axis=0,
+        )
 
     # Numerical instability in Manhattan distance for floats means that we need
     # to convert to int to avoid artefacts in the finished image
