@@ -108,7 +108,7 @@ named_colours_file: "colour_lists/css_colour_list.yaml"
 colour_list: ["lemonchiffon", "tomato", "skyblue", "steelblue"]
 border_thickness: 5
 centroid_thickness:  0
-file_path: "images/demo_4_poisson.png"
+file_path: "images/example_image_3_poisson.png"
 
 sampling_method: "poisson"
 poisson_radius: 0.09
@@ -125,7 +125,7 @@ The resulting images are as follows:
     </tr>
     <tr>
   <td><img src="/images/demo_4_uniform.png" width="400" /></td>
-  <td> <img src="/images/demo_4_poisson.png" width="400" /> </td>
+  <td> <img src="/images/example_image_3_poisson.png" width="400" /> </td>
     </tr>
 </table>
 
