@@ -6,7 +6,7 @@ named_colours_file: "colour_lists/css_colour_list.yaml"
 colour_list: ["lemonchiffon", "tomato", "skyblue", "steelblue"]
 border_thickness: 5
 centroid_thickness:  0
-file_path: "images/demo_3_poisson.png"
+file_path: "images/example_image_3_poisson.png"
 
 sampling_method: "poisson"
 poisson_radius: 0.09

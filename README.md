@@ -124,7 +124,7 @@ The resulting images are as follows:
     <td><b>Poisson Disk Sampling</b></td>
     </tr>
     <tr>
-  <td><img src="/images/demo_4_uniform.png" width="400" /></td>
+  <td><img src="/images/example_image_3_uniform.png" width="400" /></td>
   <td> <img src="/images/example_image_3_poisson.png" width="400" /> </td>
     </tr>
 </table>
@@ -152,10 +152,9 @@ The full list of configurable settings in the yaml files is as follows:
     numpy_seed (int): The random seed for numpy
     python_seed (int): The random seed for Python
     sampling_method (string): The sampling method (either "uniform" or "poisson"
-    # Radius to use in Poisson sampling
     poisson_radius (float): Poisson disk radius, given as fraction of image width
 
-    # May become deprecated
+    # The following options may be deprecated in future updates
     placed_points (Optional[list[list[float]]]): coordinates of manually placed points
     point_radius (Optional[float]): How far from manually placed points randomly placed points must be
 ```

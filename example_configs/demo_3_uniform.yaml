@@ -7,7 +7,7 @@ named_colours_file: "colour_lists/css_colour_list.yaml"
 colour_list: ["lemonchiffon", "tomato", "skyblue", "steelblue"]
 border_thickness: 5
 centroid_thickness:  0
-file_path: "images/demo_3_uniform.png"
+file_path: "images/example_image_3_uniform.png"
 
 numpy_seed: 0
 python_seed: 0
