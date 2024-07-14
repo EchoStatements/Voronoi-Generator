@@ -72,4 +72,90 @@ This produces the following image:
 <img src="images/example_image_2.png" width="500">
 
 
-#
+## Sampling Methods
+
+The default sampling method is to generate centroids using a uniform distribution over
+the image. When using this method, you need to specify the number of points.
+
+Alternatively, you can use Poisson disk sampling to generate points more evenly across
+the pixel space. The following shows two similar configurations, one using the default
+distribution, the other using poission disk sampling
+
+**Uniform Distribution**
+```yaml
+x_size: 2000
+y_size: 2000
+n_centroids: 80
+distance_function: "euclidean"
+
+named_colours_file: "colour_lists/css_colour_list.yaml"
+colour_list: ["lemonchiffon", "tomato", "skyblue", "steelblue"]
+border_thickness: 5
+centroid_thickness:  0
+file_path: "images/demo_4_uniform.png"
+
+numpy_seed: 0
+python_seed: 0
+```
+
+**Poisson Disk sampling**
+```yaml
+x_size: 2000
+y_size: 2000
+distance_function: "euclidean"
+
+named_colours_file: "colour_lists/css_colour_list.yaml"
+colour_list: ["lemonchiffon", "tomato", "skyblue", "steelblue"]
+border_thickness: 5
+centroid_thickness:  0
+file_path: "images/demo_4_poisson.png"
+
+sampling_method: "poisson"
+poisson_radius: 0.09
+
+numpy_seed: 0
+python_seed: 0
+```
+The resulting images are as follows:
+
+<table>
+    <tr>
+    <td><b>Uniform Distribution</b></td>
+    <td><b>Poisson Disk Sampling</b></td>
+    </tr>
+    <tr>
+  <td><img src="/images/demo_4_uniform.png" width="400" /></td>
+  <td> <img src="/images/demo_4_poisson.png" width="400" /> </td>
+    </tr>
+</table>
+
+Note that in the latter case, the number of centroids is determined by the poisson radius. The variable `n_centroids` is still used, but only in that 10x its value is the upper limit on the number of points produced by sampling procedure.
+
+# List of Settings
+
+The full list of configurable settings in the yaml files is as follows:
+
+```
+    x_size (int): Width of the image in pixels
+    y_size (int): Height of the image in pixels
+    n_centroids (int): Number of centroids to include
+    distance_function (str): Distance function to use ("euclidean", "cityblock" or "chebyshev")
+    colour_list (list[Union[list[int], str]]): list of colour names or RGB values.
+    named_colours_file (str) = Path to file defining named colours
+    colouring (str): Whether to use solver for colouring ("solve" or "random")
+    wrap_x (bool): Whether image should wrap on x-axis
+    wrap_y (bool): Whether image should wrap on y-axis
+    border_thickness (int): Thickness of the border between tiles in pixels
+    centroid_thickness (int): Size of the centroid point in pixels
+    centroid_colour (Union[list[int], str]): Colour of centroid points
+    file_path (str): File path where the image should be saved
+    numpy_seed (int): The random seed for numpy
+    python_seed (int): The random seed for Python
+    sampling_method (string): The sampling method (either "uniform" or "poisson"
+    # Radius to use in Poisson sampling
+    poisson_radius (float): Poisson disk radius, given as fraction of image width
+
+    # May become deprecated
+    placed_points (Optional[list[list[float]]]): coordinates of manually placed points
+    point_radius (Optional[float]): How far from manually placed points randomly placed points must be
+```
