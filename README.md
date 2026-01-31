@@ -44,7 +44,7 @@ python_seed: 0
 
 This produces the following diagram:
 
-<img src="images/example_image.png" width="500">
+<img src="images/example_image_orig.png" width="500">
 
 ## Named Colours
 
