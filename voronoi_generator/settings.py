@@ -20,9 +20,11 @@ class VoronoiDiagramSettings(BaseModel):
 
     wrap_x: bool = Field(default=True)
     wrap_y: bool = Field(default=False)
+    delaunay_wrap_x: Optional[bool] = Field(default=None)
+    delaunay_wrap_y: Optional[bool] = Field(default=None)
 
     border_thickness: int = Field(default=2)
-    centroid_thickness: int = Field(default=5)
+    centroid_thickness: int = Field(default=0)
 
     file_path: Optional[str] = Field(default=None)
 
@@ -36,6 +38,10 @@ class VoronoiDiagramSettings(BaseModel):
 
     placed_points: Optional[list[list[float]]] = Field(default=None)
     point_radius: Optional[float] = Field(default=None)
+
+    which_tile: str = Field(default="voronoi")
+    delaunay_border_thickness: int = Field(default=0)
+    colouring_method: str = Field(default="integer_programming")
 
 
 class NamedColours(BaseModel):

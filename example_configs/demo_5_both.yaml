@@ -1,0 +1,20 @@
+x_size: 2000
+y_size: 2000
+distance_function: "euclidean"
+colour_list: [[255, 215, 230], [255, 240, 246], [255, 70, 160], [190, 30, 120]]
+
+wrap_x: true
+wrap_y: false
+delaunay_wrap_x: true
+delaunay_wrap_y: false
+
+border_thickness: 0
+delaunay_border_thickness: 4
+file_path: "../images/example_image_5.png"
+
+sampling_method: "poisson"
+poisson_radius: 0.2
+centroid_thickness: 16
+
+colouring_method: "integer_programming"
+which_tile: "voronoi"

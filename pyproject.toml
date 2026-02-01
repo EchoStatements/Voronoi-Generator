@@ -114,6 +114,9 @@ extend-exclude=[".gitignore", "LICENSE", ".*",]
 center = "center"
 minimize="minimize"
 seed="seed"
+coloring="coloring"
+color="color"
+colors="colors"
 
 [tool.typos.default]
 locale="en-gb"

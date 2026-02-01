@@ -7,6 +7,7 @@ This library allows for config-driven creation of Voronoi diagrams, implemented 
 **Features include**:
 
 * Choice of distance functions (from scikit-learn's pairwise distances)
+* Delaunay triangulation as an alternative to Voronoi partitioning
 * Vertical/horizontal tiling of plane
 * Fully customisable colour palette, using a four-colour solver to prevent adjacent regions from sharing a colour
 * Optional region borders
@@ -44,7 +45,7 @@ python_seed: 0
 
 This produces the following diagram:
 
-<img src="images/example_image.png" width="500">
+<img src="images/example_image_orig.png" width="500">
 
 ## Named Colours
 
@@ -151,8 +152,12 @@ The full list of configurable settings in the yaml files is as follows:
     file_path (str): File path where the image should be saved
     numpy_seed (int): The random seed for numpy
     python_seed (int): The random seed for Python
-    sampling_method (string): The sampling method (either "uniform" or "poisson"
+    sampling_method (string): The sampling method (either "uniform" or "poisson")
     poisson_radius (float): Poisson disk radius, given as fraction of image width
+    which_tile (str): Partitioning method ("voronoi" or "delaunay")
+    delaunay_wrap_x (bool): Whether Delaunay triangulation should wrap on x-axis
+    delaunay_wrap_y (bool): Whether Delaunay triangulation should wrap on y-axis
+    delaunay_border_thickness (int): Thickness of Delaunay triangle outlines in pixels
 
     # The following options may be deprecated in future updates
     placed_points (Optional[list[list[float]]]): coordinates of manually placed points
