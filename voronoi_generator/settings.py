@@ -40,7 +40,7 @@ class VoronoiDiagramSettings(BaseModel):
     point_radius: Optional[float] = Field(default=None)
 
     which_tile: str = Field(default="voronoi")
-    delaunay_outline: int = Field(default=0)
+    delaunay_border_thickness: int = Field(default=0)
     colouring_method: str = Field(default="integer_programming")
 
 

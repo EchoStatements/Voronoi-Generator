@@ -48,7 +48,7 @@ def create_image_array(
     voronoi_outlines=None,
     centroid_mask=None,
     which_colours="voronoi",
-    delaunay_outlines=None,
+    delaunay_border_thicknesss=None,
 ):
     """Creates a numpy array with RGB direction which can be converted into an image.
 
@@ -62,7 +62,7 @@ def create_image_array(
         mask (np.array): A mask for regions where the second palette in colour_lists should be used
         centroid_mask: a 2d array showing where the centroids are
         which_colours: whether to colour the voronoi or delaunay partitions
-        delaunay_outlines: the thickness to be used for the delaunay outlines
+        delaunay_border_thicknesss: the thickness to be used for the delaunay outlines
 
     Returns:
         np.array: an array of size (y_size, x_size, 3), containing the RGB data for the image.
@@ -88,11 +88,11 @@ def create_image_array(
                 :, :, idx
             ]
 
-    if delaunay_outlines is not None:
+    if delaunay_border_thicknesss is not None:
         for idx in range(3):
-            rgb_array[:, :, idx] = (delaunay_outlines * 0) + np.logical_not(delaunay_outlines.astype(bool)) * rgb_array[
-                :, :, idx
-            ]
+            rgb_array[:, :, idx] = (delaunay_border_thicknesss * 0) + np.logical_not(
+                delaunay_border_thicknesss.astype(bool)
+            ) * rgb_array[:, :, idx]
 
     if centroid_mask is not None:
         for idx in range(3):

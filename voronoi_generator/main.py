@@ -78,12 +78,14 @@ def create_voronoi_diagram(settings: VoronoiDiagramSettings):
     delaunay_wrap_y = settings.delaunay_wrap_y if settings.delaunay_wrap_y is not None else settings.wrap_y
     delaunay_partitions = delaunay(grid, centroids, delaunay_wrap_x, delaunay_wrap_y)
     delaunay_partitions = delaunay_partitions.reshape(y_size, x_size).T
-    if settings.delaunay_outline > 0:
-        delaunay_outline = (
-            generate_outlines(delaunay_partitions, settings.delaunay_outline) if settings.delaunay_outline > 0 else None
+    if settings.delaunay_border_thickness > 0:
+        delaunay_border_thickness = (
+            generate_outlines(delaunay_partitions, settings.delaunay_border_thickness)
+            if settings.delaunay_border_thickness > 0
+            else None
         )
     else:
-        delaunay_outline = None
+        delaunay_border_thickness = None
 
     if settings.which_tile == "voronoi":
         adj_matrix = get_adjacency_matrix(partitions)
@@ -100,7 +102,7 @@ def create_voronoi_diagram(settings: VoronoiDiagramSettings):
         outlines,
         centroid_mask,
         which_colours=settings.which_tile,
-        delaunay_outlines=delaunay_outline,
+        delaunay_border_thicknesss=delaunay_border_thickness,
     )
 
     if settings.file_path is not None:
