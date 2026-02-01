@@ -132,6 +132,45 @@ The resulting images are as follows:
 
 Note that in the latter case, the number of centroids is determined by the poisson radius. The variable `n_centroids` is still used, but only in that 10x its value is the upper limit on the number of points produced by sampling procedure.
 
+## Delaunay Triangulation
+
+As an alternative to Voronoi partitioning, you can use Delaunay triangulation to divide the plane into triangles. Set `which_tile: "delaunay"` to colour the triangles instead of Voronoi regions.
+
+```yaml
+x_size: 2000
+y_size: 2000
+distance_function: "euclidean"
+colour_list: [[255, 179, 186], [255, 223, 186], [186, 255, 201], [186, 225, 255]]
+wrap_x: true
+delaunay_wrap_x: true
+delaunay_border_thickness: 4
+sampling_method: "poisson"
+poisson_radius: 0.2
+centroid_thickness: 16
+which_tile: "delaunay"
+```
+
+<img src="images/example_image_4.png" width="500">
+
+You can also mix Voronoi and Delaunay by overlaying triangle outlines on a Voronoi diagram. Set `which_tile: "voronoi"` to colour the Voronoi regions while specifying a `delaunay_border_thickness` to draw the triangle edges.
+
+```yaml
+x_size: 2000
+y_size: 2000
+distance_function: "euclidean"
+colour_list: [[255, 215, 230], [255, 240, 246], [255, 70, 160], [190, 30, 120]]
+wrap_x: true
+delaunay_wrap_x: true
+border_thickness: 0
+delaunay_border_thickness: 4
+sampling_method: "poisson"
+poisson_radius: 0.2
+centroid_thickness: 16
+which_tile: "voronoi"
+```
+
+<img src="images/example_image_5.png" width="500">
+
 # List of Settings
 
 The full list of configurable settings in the yaml files is as follows:
